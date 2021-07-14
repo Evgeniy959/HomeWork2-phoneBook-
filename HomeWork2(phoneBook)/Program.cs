@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace HomeWork2phoneBook
@@ -17,6 +18,7 @@ namespace HomeWork2phoneBook
         {
             var exit = false;
             var phoneBook = new Dictionary<string, string>();
+            phoneBook = ExportFromFile();
 
             do
             {
@@ -26,7 +28,9 @@ namespace HomeWork2phoneBook
                 Console.WriteLine("3. Удалить");
                 Console.WriteLine("4. Найти");
                 Console.WriteLine("5. Показать всё");
-                Console.WriteLine("0. Выход");
+                Console.WriteLine("6.Загрузить из файла ");
+                Console.WriteLine("7.Сохранить в новый файл");
+                Console.WriteLine("0. Выход, cохранить в файл");
                 var select = Console.ReadLine();
                 switch (select)
                 {
@@ -45,7 +49,16 @@ namespace HomeWork2phoneBook
                     case "5": // 5. Показать всё
                         PrintDictionary(phoneBook);
                         break;
+                    case "6":
+                        phoneBook = ExportFromFile();
+                        break;
+                    case "7":
+                        //ImportToFilePath(phoneBook);
+                        //ImportToFile(phoneBook);
+                        AddFile();
+                        break;
                     case "0": // 0. Выход
+                        ImportToFile(phoneBook);
                         exit = true;
                         break;
                     default: // Неправильный ввод
@@ -55,7 +68,32 @@ namespace HomeWork2phoneBook
                 }
             } while (!exit);
             Console.WriteLine("До свидания...");
-        }        
+        }
+        static Dictionary<string, string> ExportFromFile()
+        {            
+            var file = new StreamReader(Failname());
+            var phoneBook = new Dictionary<string, string>();
+
+            var str = string.Empty;
+            while ((str = file.ReadLine()) != null)
+            {
+                var temp = SplitStr(str, '|');
+                phoneBook.Add(temp.key, temp.value);
+            }
+            file.Close();
+
+            return phoneBook;
+        }
+
+        static (string key, string value) SplitStr(string str, char delimiter)
+        {
+            var temp = str.Split(delimiter);
+            var key = temp[0];
+            var value = temp[1];
+
+            return (key, value);
+        }
+
         static void Edit(Dictionary<string, string> dictionary)
         {
             var flag = false;
@@ -144,6 +182,45 @@ namespace HomeWork2phoneBook
             {
                 dictionary.Add(phone, name);
             }
+        }
+        static void AddFile()
+        {
+            var phoneBook = new Dictionary<string, string>();
+            Console.WriteLine("Введите данные которые хотите сохранить: ");
+            /*Console.Write("Имя - ");
+            var name = Console.ReadLine();
+            Console.Write("Номер телефона - ");
+            var phone = Console.ReadLine();
+            phoneBook.Add(phone, name);*/
+            //dictionary.Add(phone, name);
+            AddRecord(phoneBook);
+            ImportToFilePath(phoneBook);
+        }
+        static string Failname()
+        {
+            Console.WriteLine("Введите имя файла - ");
+            string path = Console.ReadLine();
+            return path;
+        }
+        static void ImportToFile(Dictionary<string, string> dictionary)
+        {            
+            var file = new StreamWriter("it.phoneBook", true);
+            foreach (var element in dictionary)
+            {
+                file.WriteLine($"{element.Key}|{element.Value}");
+            }
+            // file.Flush();
+            file.Close();
+        }
+        static void ImportToFilePath(Dictionary<string, string> dictionary)
+        {            
+            var file = new StreamWriter(Failname(), true);
+            foreach (var element in dictionary)
+            {
+                file.WriteLine($"{element.Key}|{element.Value}");
+            }
+            // file.Flush();
+            file.Close();
         }
 
         static void PrintDictionary(Dictionary<string, string> dictionary)
