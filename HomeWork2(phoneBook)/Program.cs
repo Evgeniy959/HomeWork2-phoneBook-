@@ -3,7 +3,13 @@
 Должен хранится номер телефона и имя человека.
 Программа должна уметь добавлять новый номер, редактировать старый, удалять и искать по номеру телефона кому он принадлежит.
 
-*Продумать добавление типа/группы записи (семья, друзья, коллеги и т.п.)*/
+*Продумать добавление типа/группы записи (семья, друзья, коллеги и т.п.)
+
+Задание (добавить):
+Доработать программу "Телефонный справочник" следующим образом:
+добавить сохранение данных в файл перед закрытием
+добавить импорт данных из файла при старте программы
+реализовать ручной выбор сохранения данных в файл с вводом имени файла.*/ 
 
 using System;
 using System.Collections.Generic;
@@ -53,9 +59,7 @@ namespace HomeWork2phoneBook
                         phoneBook = ExportFromFile();
                         break;
                     case "7":
-                        //ImportToFilePath(phoneBook);
-                        //ImportToFile(phoneBook);
-                        AddFile();
+                        AddFile();                                            
                         break;
                     case "0": // 0. Выход
                         ImportToFile(phoneBook);
@@ -69,6 +73,23 @@ namespace HomeWork2phoneBook
             } while (!exit);
             Console.WriteLine("До свидания...");
         }
+        static string DataName()
+        {
+            Console.Write("Введите имя - ");
+            var name = Console.ReadLine();
+            return name;
+        }
+        static string DataPhone()
+        {            
+            Console.Write("Введите номер телефона - ");
+            var phone = Console.ReadLine();
+            return phone;
+        }
+        static string DataGroup()
+        {
+            Console.Write("Введите название группы - ");
+            return Console.ReadLine();
+        }
         static Dictionary<string, string> ExportFromFile()
         {            
             var file = new StreamReader(Failname());
@@ -81,26 +102,19 @@ namespace HomeWork2phoneBook
                 phoneBook.Add(temp.key, temp.value);
             }
             file.Close();
-
             return phoneBook;
         }
-
         static (string key, string value) SplitStr(string str, char delimiter)
         {
             var temp = str.Split(delimiter);
             var key = temp[0];
             var value = temp[1];
-
             return (key, value);
         }
-
         static void Edit(Dictionary<string, string> dictionary)
         {
             var flag = false;
-
-            Console.Write("Введите имя - ");
-            var name = Console.ReadLine();
-
+            var name = DataName();
             foreach (var element in dictionary)
             {
                 if (element.Value == name)
@@ -124,16 +138,12 @@ namespace HomeWork2phoneBook
         static void Delete(Dictionary<string, string> dictionary)
         {           
             var flag = false;
-
-            Console.Write("Введите имя - ");
-            var name = Console.ReadLine();
-
+            var name = DataName();
             foreach (var element in dictionary)
             {
                 if (element.Value == name)
                 {
                     dictionary.Remove(element.Key);
-                    //dictionary.Remove(element.Value);
                     flag = true;
                 }
             }
@@ -145,10 +155,8 @@ namespace HomeWork2phoneBook
 
         static void Find(Dictionary<string, string> dictionary)
         {
-            var flag = false;            
-            Console.Write("Введите имя - ");
-            var name = Console.ReadLine();
-
+            var flag = false;                        
+            var name = DataName();
             foreach (var element in dictionary)
             {
                 if (element.Value == name)
@@ -165,11 +173,9 @@ namespace HomeWork2phoneBook
         }
         static void AddRecord(Dictionary<string, string> dictionary)
         {
-            var flagAdd = false;
-            Console.Write("Введите имя - ");
-            var name = Console.ReadLine();
-            Console.Write("Введите номер телефона - ");
-            var phone = Console.ReadLine();
+            var flagAdd = false;            
+            var name = DataName();
+            var phone = DataPhone();
             foreach (var element in dictionary)
             {
                 if (element.Value == name && element.Key == phone)
@@ -186,13 +192,7 @@ namespace HomeWork2phoneBook
         static void AddFile()
         {
             var phoneBook = new Dictionary<string, string>();
-            Console.WriteLine("Введите данные которые хотите сохранить: ");
-            /*Console.Write("Имя - ");
-            var name = Console.ReadLine();
-            Console.Write("Номер телефона - ");
-            var phone = Console.ReadLine();
-            phoneBook.Add(phone, name);*/
-            //dictionary.Add(phone, name);
+            Console.WriteLine("Введите данные которые хотите сохранить: ");            
             AddRecord(phoneBook);
             ImportToFilePath(phoneBook);
         }
@@ -222,7 +222,6 @@ namespace HomeWork2phoneBook
             // file.Flush();
             file.Close();
         }
-
         static void PrintDictionary(Dictionary<string, string> dictionary)
         {
             foreach (var element in dictionary)
